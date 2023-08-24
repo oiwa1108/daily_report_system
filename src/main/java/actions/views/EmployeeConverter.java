@@ -1,5 +1,8 @@
 package actions.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import constants.AttributeConst;
 import constants.JpaConst;
 import models.Employee;
@@ -43,7 +46,7 @@ public class EmployeeConverter {
      */
     public static EmployeeView toView(Employee e) {
 
-        if (e == null) {
+        if(e == null) {
             return null;
         }
 
@@ -64,6 +67,21 @@ public class EmployeeConverter {
                         : e.getDeleteFlag() == JpaConst.EMP_DEL_TRUE
                                 ? AttributeConst.DEL_FLAG_TRUE.getIntegerValue()
                                 : AttributeConst.DEL_FLAG_FALSE.getIntegerValue());
+    }
+
+    /**
+     * DTOモデルのリストからViewモデルのリストを作成する
+     * @param list DTOモデルのリスト
+     * @return Viewモデルのリスト
+     */
+    public static List<EmployeeView> toViewList(List<Employee> list) {
+        List<EmployeeView> evs = new ArrayList<>();
+
+        for (Employee e : list) {
+            evs.add(toView(e));
+        }
+
+        return evs;
     }
 
     /**
