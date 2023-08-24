@@ -53,6 +53,7 @@ public class FrontController extends HttpServlet {
      * @param response レスポンス
      * @return
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" }) //コンパイラ警告を抑制
     private ActionBase getAction(HttpServletRequest request, HttpServletResponse response) {
         Class type = null;
         ActionBase action = null;
@@ -67,6 +68,7 @@ public class FrontController extends HttpServlet {
 
             //ActionBaseのオブジェクトにキャスト(例:actions.EmployeeActionオブジェクト→actions.ActionBaseオブジェクト)
             action = (ActionBase) (type.asSubclass(ActionBase.class).getDeclaredConstructor().newInstance());
+
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SecurityException
                 | IllegalArgumentException | InvocationTargetException| NoSuchMethodException e) {
 
