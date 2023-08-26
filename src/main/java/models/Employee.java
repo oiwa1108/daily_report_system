@@ -25,7 +25,7 @@ import lombok.Setter;
 @NamedQueries({
     @NamedQuery(
             name = JpaConst.Q_EMP_GET_ALL,
-            query = JpaConst.Q_EMP_COUNT_DEF),
+            query = JpaConst.Q_EMP_GET_ALL_DEF),
     @NamedQuery(
             name = JpaConst.Q_EMP_COUNT,
             query = JpaConst.Q_EMP_COUNT_DEF),
