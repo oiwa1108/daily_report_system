@@ -18,13 +18,12 @@
             </div>
         </c:if>
         <h2>ログイン</h2>
-        <form method="POST"
-            action="<c:url value='/?action=${action}&command=${command}' />">
+        <form method="POST" action="<c:url value='/?action=${action}&command=${command}' />">
             <label>社員番号</label><br />
             <input type="text" name="${AttributeConst.EMP_CODE.getValue()}" id="${AttributeConst.EMP_CODE.getValue()}" value="${code}">
             <br /><br />
             <label>パスワード</label><br />
-            <input type="password" name="${AttributeConst.EMP_NAME.getValue()}" id="${AttributeConst.EMP_NAME.getValue()}">
+            <input type="password" name="${AttributeConst.EMP_PASS.getValue()}" id="${AttributeConst.EMP_PASS.getValue()}">
             <br /><br />
             <input type="hidden" name="${AttributeConst.TOKEN.getValue()}" value="${_token}" />
             <button type="submit">ログイン</button>
