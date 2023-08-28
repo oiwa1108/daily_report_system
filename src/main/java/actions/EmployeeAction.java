@@ -42,27 +42,31 @@ public class EmployeeAction extends ActionBase {
      */
     public void index() throws ServletException, IOException {
 
-        //指定されたページ数の一覧画面に表示するデータを取得
-        int page = getPage();
-        List<EmployeeView> employees = service.getPerPage(page);
+      //管理者かどうかのチェック //追記
+        if (checkAdmin()) { //追記
 
-        //全ての従業員データの件数を取得
-        long employeeCount = service.countAll();
+            //指定されたページ数の一覧画面に表示するデータを取得
+            int page = getPage();
+            List<EmployeeView> employees = service.getPerPage(page);
 
-        putRequestScope(AttributeConst.EMPLOYEES, employees); //取得した従業員データ
-        putRequestScope(AttributeConst.EMP_COUNT, employeeCount); //全ての従業員データの件数
-        putRequestScope(AttributeConst.PAGE, page); //ページ数
-        putRequestScope(AttributeConst.MAX_ROW, JpaConst.ROW_PER_PAGE); //1ページに表示するレコードの数
+            //全ての従業員データの件数を取得
+            long employeeCount = service.countAll();
 
-        //セッションにフラッシュメッセージが設定されている場合はリクエストスコープに移し替え、セッションからは削除する
-        String flush = getSessionScope(AttributeConst.FLUSH);
-        if (flush != null) {
-            putRequestScope(AttributeConst.FLUSH, flush);
-            removeSessionScope(AttributeConst.FLUSH);
+            putRequestScope(AttributeConst.EMPLOYEES, employees); //取得した従業員データ
+            putRequestScope(AttributeConst.EMP_COUNT, employeeCount); //全ての従業員データの件数
+            putRequestScope(AttributeConst.PAGE, page); //ページ数
+            putRequestScope(AttributeConst.MAX_ROW, JpaConst.ROW_PER_PAGE); //1ページに表示するレコードの数
+
+            //セッションにフラッシュメッセージが設定されている場合はリクエストスコープに移し替え、セッションからは削除する
+            String flush = getSessionScope(AttributeConst.FLUSH);
+            if (flush != null) {
+                putRequestScope(AttributeConst.FLUSH, flush);
+                removeSessionScope(AttributeConst.FLUSH);
+            }
+
+            //一覧画面を表示
+            forward(ForwardConst.FW_EMP_INDEX);
         }
-
-        //一覧画面を表示
-        forward(ForwardConst.FW_EMP_INDEX);
 
     }
 
@@ -72,11 +76,16 @@ public class EmployeeAction extends ActionBase {
      * @throws IOException
      */
     public void entryNew() throws ServletException, IOException {
-        putRequestScope(AttributeConst.TOKEN, getTokenId()); // CSRF対策用トークン
-        putRequestScope(AttributeConst.EMPLOYEE, new EmployeeView()); // 空の従業員インスタンス
 
-        // 新規登録画面を表示
-        forward(ForwardConst.FW_EMP_NEW);
+      //管理者かどうかのチェック //追記
+        if (checkAdmin()) { //追記
+
+            putRequestScope(AttributeConst.TOKEN, getTokenId()); // CSRF対策用トークン
+            putRequestScope(AttributeConst.EMPLOYEE, new EmployeeView()); // 空の従業員インスタンス
+
+            // 新規登録画面を表示
+            forward(ForwardConst.FW_EMP_NEW);
+        }
     }
 
     /**
@@ -86,7 +95,7 @@ public class EmployeeAction extends ActionBase {
      */
     public void create() throws ServletException, IOException {
         //CSRF対策 tokenのチェック
-        if (checkToken()) {
+        if (checkAdmin() && checkToken()) {
 
             //パラメータの値を元に従業員情報のインスタンスを作成する
             EmployeeView ev = new EmployeeView(
@@ -134,19 +143,23 @@ public class EmployeeAction extends ActionBase {
      */
     public void show() throws ServletException, IOException {
 
-        //idを条件に従業員データを取得する
-        EmployeeView ev = service.findOne(toNumber(getRequestParam(AttributeConst.EMP_ID)));
+      //管理者かどうかのチェック //追記
+        if (checkAdmin()) { //追記
 
-        if (ev == null || ev.getDeleteFlag() == AttributeConst.DEL_FLAG_TRUE.getIntegerValue()) {
-            //データが取得できなかった、または論理削除されている場合はエラー画面を表示
-            forward(ForwardConst.FW_ERR_UNKNOWN);
-            return;
+            //idを条件に従業員データを取得する
+            EmployeeView ev = service.findOne(toNumber(getRequestParam(AttributeConst.EMP_ID)));
+
+            if (ev == null || ev.getDeleteFlag() == AttributeConst.DEL_FLAG_TRUE.getIntegerValue()) {
+                //データが取得できなかった、または論理削除されている場合はエラー画面を表示
+                forward(ForwardConst.FW_ERR_UNKNOWN);
+                return;
+            }
+
+            putRequestScope(AttributeConst.EMPLOYEE, ev); //取得した従業員情報
+
+            //詳細画面を表示
+            forward(ForwardConst.FW_EMP_SHOW);
         }
-
-        putRequestScope(AttributeConst.EMPLOYEE, ev); //取得した従業員情報
-
-        //詳細画面を表示
-        forward(ForwardConst.FW_EMP_SHOW);
     }
 
     /**
@@ -156,20 +169,24 @@ public class EmployeeAction extends ActionBase {
      */
     public void edit() throws ServletException, IOException {
 
-        //idを条件に従業員データを取得する
-        EmployeeView ev = service.findOne(toNumber(getRequestParam(AttributeConst.EMP_ID)));
+      //管理者かどうかのチェック //追記
+        if (checkAdmin()) { //追記
 
-        if (ev == null || ev.getDeleteFlag() == AttributeConst.DEL_FLAG_TRUE.getIntegerValue()) {
-            //データが取得できなかった、または論理削除されている場合はエラー画面を表示
-            forward(ForwardConst.FW_ERR_UNKNOWN);
-            return;
+            //idを条件に従業員データを取得する
+            EmployeeView ev = service.findOne(toNumber(getRequestParam(AttributeConst.EMP_ID)));
+
+            if (ev == null || ev.getDeleteFlag() == AttributeConst.DEL_FLAG_TRUE.getIntegerValue()) {
+                //データが取得できなかった、または論理削除されている場合はエラー画面を表示
+                forward(ForwardConst.FW_ERR_UNKNOWN);
+                return;
+            }
+
+            putRequestScope(AttributeConst.EMPLOYEE, ev); //取得した従業員情報
+            putRequestScope(AttributeConst.TOKEN, getTokenId()); //CSRF対策用トークン
+
+            //詳細画面を表示
+            forward(ForwardConst.FW_EMP_EDIT);
         }
-
-        putRequestScope(AttributeConst.EMPLOYEE, ev); //取得した従業員情報
-        putRequestScope(AttributeConst.TOKEN, getTokenId()); //CSRF対策用トークン
-
-        //詳細画面を表示
-        forward(ForwardConst.FW_EMP_EDIT);
     }
 
     /**
@@ -179,49 +196,58 @@ public class EmployeeAction extends ActionBase {
      */
     public void update() throws ServletException, IOException {
 
-        //CSRF対策 tokenのチェック
-        if (checkToken()) {
-            //パラメータの値を元に従業員情報のインスタンスを作成する
-            EmployeeView ev = new EmployeeView(
-                    toNumber(getRequestParam(AttributeConst.EMP_ID)),
-                    getRequestParam(AttributeConst.EMP_CODE),
-                    getRequestParam(AttributeConst.EMP_NAME),
-                    getRequestParam(AttributeConst.EMP_PASS),
-                    toNumber(getRequestParam(AttributeConst.EMP_ADMIN_FLG)),
-                    null,
-                    null,
-                    AttributeConst.DEL_FLAG_FALSE.getIntegerValue());
+      //管理者かどうかのチェック //追記
+        if (checkAdmin()) { //追記
 
-            //アプリケーションスコープからpepper文字列を取得
-            String pepper = getContextScope(PropertyConst.PEPPER);
+            //CSRF対策 tokenのチェック
+            if (checkToken()) {
+                //パラメータの値を元に従業員情報のインスタンスを作成する
+                EmployeeView ev = new EmployeeView(
+                        toNumber(getRequestParam(AttributeConst.EMP_ID)),
+                        getRequestParam(AttributeConst.EMP_CODE),
+                        getRequestParam(AttributeConst.EMP_NAME),
+                        getRequestParam(AttributeConst.EMP_PASS),
+                        toNumber(getRequestParam(AttributeConst.EMP_ADMIN_FLG)),
+                        null,
+                        null,
+                        AttributeConst.DEL_FLAG_FALSE.getIntegerValue());
 
-            //従業員情報更新
-            List<String> errors = service.update(ev, pepper);
+                //アプリケーションスコープからpepper文字列を取得
+                String pepper = getContextScope(PropertyConst.PEPPER);
 
-            if (errors.size() > 0) {
-                //更新中にエラーが発生した場合
+                //従業員情報更新
+                List<String> errors = service.update(ev, pepper);
 
-                putRequestScope(AttributeConst.TOKEN, getTokenId()); //CSRF対策用トークン
-                putRequestScope(AttributeConst.EMPLOYEE, ev); //入力された従業員情報
-                putRequestScope(AttributeConst.ERR, errors); //エラーのリスト
+                if (errors.size() > 0) {
+                    //更新中にエラーが発生した場合
 
-                //編集画面を再表示
-                forward(ForwardConst.FW_EMP_EDIT);
-            } else {
-                //更新中にエラーがなかった場合
+                    putRequestScope(AttributeConst.TOKEN, getTokenId()); //CSRF対策用トークン
+                    putRequestScope(AttributeConst.EMPLOYEE, ev); //入力された従業員情報
+                    putRequestScope(AttributeConst.ERR, errors); //エラーのリスト
 
-                //セッションに更新完了のフラッシュメッセージを設定
-                putSessionScope(AttributeConst.FLUSH, MessageConst.I_UPDATED.getMessage());
+                    //編集画面を再表示
+                    forward(ForwardConst.FW_EMP_EDIT);
+                } else {
+                    //更新中にエラーがなかった場合
 
-                //一覧画面にリダイレクト
-                redirect(ForwardConst.ACT_EMP, ForwardConst.CMD_INDEX);
+                    //セッションに更新完了のフラッシュメッセージを設定
+                    putSessionScope(AttributeConst.FLUSH, MessageConst.I_UPDATED.getMessage());
+
+                    //一覧画面にリダイレクト
+                    redirect(ForwardConst.ACT_EMP, ForwardConst.CMD_INDEX);
+                }
             }
         }
     }
 
+    /**
+     * 論理削除を行う
+     * @throws ServletException
+     * @throws IOException
+     */
     public void destroy() throws ServletException, IOException {
         //CSRF対策 tokenのチェック
-        if (checkToken()) {
+        if (checkAdmin() && checkToken()) {
             service.destroy(toNumber(getRequestParam(AttributeConst.EMP_ID)));
 
             //セッションに削除完了のフラッシュメッセージを設定
@@ -230,5 +256,28 @@ public class EmployeeAction extends ActionBase {
             //一覧画面にリダイレクト
             redirect(ForwardConst.ACT_EMP, ForwardConst.CMD_INDEX);
         }
+    }
+
+    /**
+     * ログイン中の従業員が管理者かどうかチェックし、管理者でなければエラー画面を表示
+     * true: 管理者 false: 管理者ではない
+     * @throws ServletException
+     * @throws IOException
+     */
+    private boolean checkAdmin() throws ServletException, IOException {
+        //セッションからログイン中の従業員情報を取得
+        EmployeeView ev = (EmployeeView) getSessionScope(AttributeConst.LOGIN_EMP);
+
+        //管理者でなければエラー画面を表示
+        if (ev.getAdminFlag() != AttributeConst.ROLE_ADMIN.getIntegerValue()) {
+
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+            return false;
+
+        } else {
+
+            return true;
+        }
+
     }
 }
