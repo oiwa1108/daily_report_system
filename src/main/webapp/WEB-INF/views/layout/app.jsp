@@ -31,6 +31,7 @@
                     <c:if
                         test="${sessionScope.login_employee.adminFlag == AttributeConst.ROLE_ADMIN.getIntegerValue()}">
                         <a href="<c:url value='?action=${actEmp}&command=${commIdx}' />">従業員管理</a>
+                        &nbsp;
                     </c:if>
                     <a href="<c:url value='?action=${actRep}&command=${commIdx}' />">日報管理</a>
                 </c:if>
@@ -38,8 +39,8 @@
             <c:if test="${sessionScope.login_employee != null}">
                 <div id="employee_name">
                     <c:out value="${sessionScope.login_employee.name}" />
-                    &nbsp;さん&nbsp;&nbsp;&nbsp;
-                    <a href="<c:url value='?action=${actAuth}&command=${commOut}' />">ログアウト</a>
+                    &nbsp;さん&nbsp;&nbsp;&nbsp; <a
+                        href="<c:url value='?action=${actAuth}&command=${commOut}' />">ログアウト</a>
                 </div>
             </c:if>
         </div>
