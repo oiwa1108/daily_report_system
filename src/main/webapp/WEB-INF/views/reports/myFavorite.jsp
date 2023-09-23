@@ -7,9 +7,7 @@
 <c:set var="actRep" value="${ForwardConst.ACT_REP.getValue()}" />
 <c:set var="commIdx" value="${ForwardConst.CMD_INDEX.getValue()}" />
 <c:set var="commShow" value="${ForwardConst.CMD_SHOW.getValue()}" />
-<c:set var="commNew" value="${ForwardConst.CMD_NEW.getValue()}" />
-<c:set var="commMyFavorite"
-    value="${ForwardConst.CMD_MYFABORITE.getValue()}" />
+<c:set var="commMyFavorite" value="${ForwardConst.CMD_MYFABORITE.getValue()}" />
 
 <c:import url="/WEB-INF/views/layout/app.jsp">
     <c:param name="content">
@@ -19,12 +17,9 @@
             </div>
         </c:if>
         <div class="menu">
-            <h2>日報 一覧</h2>&nbsp;&nbsp;
-            <h2>
-                <a
-                    href="<c:url value='?action=${actRep}&command=${commMyFavorite}' />">いいねした日報
-                    一覧</a>
-            </h2>
+            <h2><a
+                    href="<c:url value='?action=${actRep}&command=${commIdx}' />">日報 一覧</a></h2>&nbsp;&nbsp;
+            <h2>いいねした日報</h2>
         </div>
         <table id="report_list">
             <tbody>
@@ -61,15 +56,11 @@
                     </c:when>
                     <c:otherwise>
                         <a
-                            href="<c:url value='?action=${actRep}&command=${commIdx}&page=${i}' />"><c:out
+                            href="<c:url value='?action=${actRep}&command=${commMyFavorite}&page=${i}' />"><c:out
                                 value="${i}" /></a>&nbsp;
                     </c:otherwise>
                 </c:choose>
             </c:forEach>
         </div>
-        <p>
-            <a href="<c:url value='?action=${actRep}&command=${commNew}' />">新規日報の登録</a>
-        </p>
-
     </c:param>
 </c:import>

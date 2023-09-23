@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -39,8 +40,12 @@ import lombok.Setter;
     @NamedQuery(
             name = JpaConst.Q_REP_COUNT_ALL_MINE,
             query = JpaConst.Q_REP_COUNT_ALL_MINE_DEF)
-})
-
+    })
+@NamedNativeQuery(
+            name = JpaConst.Q_REP_GET_ALL_BY_LIKE_EMP_ID,
+            query = JpaConst.Q_REP_GET_ALL_BY_LIKE_EMP_ID_DEF,
+            resultClass = Report.class
+            )
 @Getter //全てのクラスフィールドについてgetterを自動生成する(Lombok)
 @Setter //全てのクラスフィールドについてsetterを自動生成する(Lombok)
 @NoArgsConstructor //引数なしコンストラクタを自動生成する(Lombok)
@@ -93,5 +98,4 @@ public class Report {
      */
     @Column(name = JpaConst.REP_COL_UPDATED_AT, nullable = false)
     private LocalDateTime updatedAt;
-
 }
